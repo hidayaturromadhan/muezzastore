@@ -101,6 +101,31 @@ Jika Anda sedang mengembangkan aplikasi mobile atau frontend terpisah, aplikasi 
 - Pastikan folder `vendor/` dan `node_modules/` tidak ikut ter-commit (sudah diatur di `.gitignore`).
 - Folder `storage/` dan `bootstrap/cache/` harus memiliki izin tulis (write permissions) di server produksi.
 
+## 🛡️ Panduan untuk Tim Keamanan & Pentest (Penetration Testing)
+
+Bagi tim keamanan (*Security Auditor* atau *Pentester*) yang ditugaskan untuk menguji sistem ini, berikut adalah informasi arsitektur dan batasan pengujian (*Rules of Engagement*):
+
+### 1. Scope Pengujian (Ruang Lingkup)
+- **In-Scope:** Seluruh logika bisnis pada domain utama (Autentikasi, Manajemen Keranjang, Checkout, dan Panel Admin).
+- **Out-of-Scope:** Layanan pihak ketiga seperti Payment Gateway (misal Midtrans/Xendit) atau API Ekspedisi (RajaOngkir). Harap **tidak** melakukan *stress test* (DDoS) atau manipulasi pada endpoint pihak ketiga.
+
+### 2. Teknologi yang Digunakan (Tech Stack)
+- **Framework:** Laravel (PHP)
+- **Database:** MySQL / SQLite
+- **Frontend:** Blade Templating Engine (dengan integrasi Vite/NPM)
+- **Autentikasi:** Laravel Session / Sanctum (untuk API Token)
+
+### 3. Peran Pengguna (User Roles)
+Untuk menguji kerentanan *Broken Access Control* (seperti IDOR atau *Privilege Escalation*), aplikasi ini memiliki pembagian peran sebagai berikut:
+1. **Guest (Unauthenticated):** Dapat melihat katalog produk, tetapi tidak dapat melakukan checkout.
+2. **Buyer / User (Authenticated):** Dapat menambah barang ke keranjang, melakukan checkout, dan melihat riwayat transaksinya sendiri.
+3. **Admin:** Memiliki akses ke Dashboard Admin (`/admin`), dapat memanipulasi data produk, kategori, dan melihat seluruh data transaksi pengguna.
+
+### 4. Lingkungan Pengujian
+Pastikan pengujian dilakukan di lingkungan **Staging / Development** dan bukan di Production. Tim keamanan dapat menggunakan Seeder (langkah instalasi ke-5) untuk menghasilkan *dummy data* dan akun *test* yang diperlukan.
+
+---
+
 ## 📜 Lisensi
 
 Proyek ini menggunakan lisensi [MIT License](https://opensource.org/licenses/MIT). Silakan lihat file LICENSE untuk detail lebih lanjut.
